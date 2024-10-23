@@ -9,8 +9,18 @@ app_ui <- function(request) {
     # Leave this function for adding external resources
     golem_add_external_resources(),
     # Your application UI logic
-    fluidPage(
-      h1("censo.negocios")
+    shinydashboard::dashboardPage(
+      header = shinydashboard::dashboardHeader(title = "Censo Negocios"),
+      sidebar = shinydashboard::dashboardSidebar(collapsed = FALSE,
+                                                 shinydashboard::sidebarMenuOutput(outputId = "menu")),
+      body = dashboardBody(
+        tabItems(
+          tabItem(
+            tabName = "mapa_principal",
+            mod_mapa_principal_ui("mapa_principal_1")
+          )
+        )
+      )
     )
   )
 }
