@@ -6,7 +6,7 @@
 #'
 #' @noRd
 #'
-#' @import ggplot2 sf leaflet
+#' @import ggplot2 sf leaflet highcharter
 #' @importFrom shiny NS tagList
 mod_mapa_principal_ui <- function(id){
   ns <- NS(id)
@@ -21,6 +21,11 @@ mod_mapa_principal_ui <- function(id){
           width = 6,
           leafletOutput(outputId = ns("mapa_principal_negocio"),
                         height = "700px")
+        ),
+        column(
+          width = 6,
+          highchartOutput(outputId = ns("barras_giro"),
+                          height = "700px")
         )
       )
     )
@@ -59,6 +64,26 @@ mod_mapa_principal_server <- function(id){
                     weight = 2,
                     fillOpacity = 0.2) |>
         addMarkers(data = datos_censo_reactive())
+    })
+
+    output$barras_giro <- renderHighchart({
+      bd_negocios <-
+        datos_censo |>
+        as_tibble() |>
+        count(giro, sort = TRUE) |>
+        select(giro, n)
+
+      g <-
+        highchart() |>
+        hc_title(text = "Tipos de negocios", style = list(fontSize = "26px")) |>
+        hc_xAxis(categories = bd_negocios$giro, labels = list(style = list(fontSize = "18px"))) |>
+        hc_yAxis(labels = list(style = list(fontSize = "18px"))) |>
+        hc_add_series(data = bd_negocios$n, type = "bar", showInLegend = FALSE) |>
+        hc_plotOptions(series = list(dataLabels = list(enabled = TRUE, format = "{point.y}", style = list(fontSize = "24px")))) |>
+        hc_legend(itemStyle = list(fontSize = "24px"))
+
+      return(g)
+
     })
 
   })

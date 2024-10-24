@@ -3,6 +3,7 @@
 export(run_app)
 import(dplyr)
 import(ggplot2)
+import(highcharter)
 import(leaflet)
 import(sf)
 import(shiny)

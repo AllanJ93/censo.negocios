@@ -4,7 +4,7 @@ set.seed(123)
 
 datos_censo <-
   tibble::tibble("negocio" = paste0("negocio_", LETTERS[1:10]),
-                 "giro" = sample(x = c("Mexicana", "China", "Italiana", "Argentina"),
+                 "giro" = sample(x = letters[1:4],
                                  size = 10, replace = TRUE),
                  "lng" = c(-117.0027573, -116.9824742, -116.9854113, -116.9986603, -116.9993123,
                            -116.9992785, -116.9966967, -116.9919853, -116.9939682, -116.9969747),
