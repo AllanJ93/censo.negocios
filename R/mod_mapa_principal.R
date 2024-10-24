@@ -50,7 +50,8 @@ mod_mapa_principal_server <- function(id){
         st_bbox(obj = shp_galeriasHipodromo) |>
         st_as_sfc() |>
         leaflet(options = leafletOptions(zoomControl = FALSE)) |>
-        addProviderTiles(providers$Esri.WorldStreetMap) |>
+        addTiles(urlTemplate = "https://mt1.google.com/vt/lyrs=r&x={x}&y={y}&z={z}",
+                 attribution = '© Google') |>
         addMarkers(lng = -116.9925142,
                    lat = 32.5083855) |>
         addPolygons(data = circunferencia_1km,
