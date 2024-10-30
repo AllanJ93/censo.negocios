@@ -87,7 +87,7 @@ mod_mapa_principal_server <- function(id){
                          fillColor = ~color,
                          # color = ~pal_tipo_negocios(P5_O1),
                          color = ~color,
-                         clusterOptions = markerClusterOptions(),
+                         # clusterOptions = markerClusterOptions(),
                          popup = ~ glue::glue("<span style='font-size:20px;'>Nombre: {P2} <br>
                                               Tipo de cocina: {tipos_cocina} <br>
                                               Horario de apertura: {P6} <br>
@@ -127,13 +127,11 @@ mod_mapa_principal_server <- function(id){
         distinct(SbjNum) |>
         nrow()
 
-      # browser()
-
       legend <-
         if(input$tipo_cocina == "Todos") {
           "todos los tipos de cocina: "
         } else {
-          paste("tipo de cocina ", input$tipo_cocina, ": ", sep = "")
+          paste("tipo de cocina '", input$tipo_cocina, "': ", sep = "")
         }
 
       g <-
