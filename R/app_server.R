@@ -19,5 +19,20 @@ app_server <- function(input, output, session) {
       })
     sidebarMenu(.list = menus)
   })
+
+  # tipos_cocina <-
+  #   datos_censo |>
+  #   as_tibble() |>
+  #   select(SbjNum, starts_with("P5_")) |>
+  #   tidyr::pivot_longer(cols = !SbjNum,
+  #                       names_to = "pregunta",
+  #                       values_to = "respuesta") |>
+  #   na.omit() |>
+  #   distinct(respuesta)
+  #
+  # tipos_cocina <-
+  #   tipos_cocina |>
+  #   bind_cols(color = topo.colors(n_distinct(tipos_cocina$respuesta)))
+
   mod_mapa_principal_server("mapa_principal_1")
 }

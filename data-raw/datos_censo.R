@@ -1,16 +1,51 @@
 ## code to prepare `datos_censo` dataset goes here
 
-set.seed(123)
+library(dplyr)
+library(sf)
+
+bd_censo_raw <-
+  readxl::read_xlsx(path = "./data-raw/38 CENSO-oct_-24_2024_29_10_21_11.xlsx", na = "-1") |>
+  filter(!SbjNum %in% c(210983135, 210983136)) |>
+  filter(!is.na(P5_O1))
+
+bd_tipo_cocina <-
+  bd_censo_raw |>
+  select(SbjNum, starts_with("P5_")) |>
+  tidyr::pivot_longer(cols = !SbjNum,
+                      names_to = "pregunta",
+                      values_to = "respuesta") |>
+  na.omit() |>
+  group_by(SbjNum) |>
+  mutate(n_cocina = n(),
+         multiple = dplyr::if_else(condition = n_cocina > 1,
+                                   true = TRUE,
+                                   false = FALSE)) |>
+  ungroup() |>
+  group_by(SbjNum, n_cocina) |>
+  summarise(tipos_cocina = paste(respuesta, collapse = ", "),
+            .groups = "drop")
 
 datos_censo <-
-  tibble::tibble("negocio" = paste0("negocio_", LETTERS[1:10]),
-                 "giro" = sample(x = letters[1:4],
-                                 size = 10, replace = TRUE),
-                 "lng" = c(-117.0027573, -116.9824742, -116.9854113, -116.9986603, -116.9993123,
-                           -116.9992785, -116.9966967, -116.9919853, -116.9939682, -116.9969747),
-                 "lat" = c(32.5061250, 32.5165065, 32.5125656, 32.5101631, 32.5021876,
-                           32.5021872, 32.5004230, 32.5149833, 32.5102074, 32.5121346)) |>
-  sf::st_as_sf(coords = c("lng", "lat"),
+  bd_censo_raw |>
+  left_join(bd_tipo_cocina, by = 'SbjNum') |>
+  mutate(P2 = stringr::str_to_title(P2)) |>
+  sf::st_as_sf(coords = c("Longitude", "Latitude"),
                crs = 4326)
 
 usethis::use_data(datos_censo, overwrite = TRUE)
+
+tipos_cocina <-
+  datos_censo |>
+  as_tibble() |>
+  select(SbjNum, starts_with("P5_")) |>
+  tidyr::pivot_longer(cols = !SbjNum,
+                      names_to = "pregunta",
+                      values_to = "respuesta") |>
+  na.omit() |>
+  distinct(respuesta)
+
+tipos_cocina <-
+  tipos_cocina |>
+  bind_cols(color = topo.colors(n_distinct(tipos_cocina$respuesta)))
+
+usethis::use_data(tipos_cocina, overwrite = TRUE)

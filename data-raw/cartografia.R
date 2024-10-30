@@ -18,6 +18,5 @@ circulo_utm <- sf::st_buffer(punto_utm, dist = 1000)
 # Transformar la circunferencia de vuelta a WGS84 (coordenadas geográficas)
 circunferencia_1km <- sf::st_transform(circulo_utm, 4326)
 
-
-usethis::use_data(shp_galeriasHipodromo, overwrite = TRUE)
+dusethis::use_data(shp_galeriasHipodromo, overwrite = TRUE)
 usethis::use_data(circunferencia_1km, overwrite = TRUE)
