@@ -20,7 +20,7 @@ mod_mapa_principal_ui <- function(id){
       fluidRow(
         selectInput(inputId = ns("tipo_cocina"),
                     label = h2("Tipo de cocina"),
-                    choices = c("Todos", sort(unique(tipos_cocina$respuesta))), width = "40%"),
+                    choices = c("Todos", sort(unique(datos_censo$P5_O1))), width = "40%"),
         column(
           width = 6,
           leafletOutput(outputId = ns("mapa_principal_negocio"),
@@ -48,10 +48,10 @@ mod_mapa_principal_server <- function(id){
         left_join(tipos_cocina, by = c("P5_O1" = "respuesta")) %>%
         {
           if(input$tipo_cocina != "Todos"){
-            # filter(.data = .,
-            #        P5_O1 == input$tipo_cocina)
             filter(.data = .,
-                   if_any(.cols = starts_with("P5_"), ~ . == input$tipo_cocina))
+                   P5_O1 == input$tipo_cocina)
+            # filter(.data = .,
+            #        if_any(.cols = starts_with("P5_"), ~ . == input$tipo_cocina))
           } else {
             .
           }
@@ -107,18 +107,22 @@ mod_mapa_principal_server <- function(id){
     })
 
     output$barras_giro <- renderHighchart({
+      # browser()
       bd_tipos_cocina <-
         datos_censo_reactive() |>
         as_tibble() |>
-        select(SbjNum, starts_with("P5_")) |>
-        tidyr::pivot_longer(cols = !c(SbjNum),
-                            names_to = "pregunta",
-                            values_to = "respuesta") |>
-        na.omit() %>%
-        count(respuesta) |>
-        mutate(pct = n/nrow(datos_censo_reactive())) |>
-        arrange(desc(pct)) |>
-        select(respuesta, n, pct) |>
+        select(SbjNum, respuesta = P5_O1) |>
+        count(respuesta, sort = TRUE) |>
+        mutate(pct = n/sum(n)) |>
+        # select(SbjNum, starts_with("P5_")) |>
+        # tidyr::pivot_longer(cols = !c(SbjNum),
+        #                     names_to = "pregunta",
+        #                     values_to = "respuesta") |>
+        # na.omit() %>%
+        # count(respuesta) |>
+        # mutate(pct = n/nrow(datos_censo_reactive())) |>
+        # arrange(desc(pct)) |>
+        # select(respuesta, n, pct) |>
         left_join(tipos_cocina, by = c("respuesta"))
 
       total <-
