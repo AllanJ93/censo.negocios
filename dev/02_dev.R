@@ -39,6 +39,7 @@ golem::add_sass_file("custom")
 ## If you have data in your package
 usethis::use_data_raw(name = "cartografia", open = FALSE)
 usethis::use_data_raw(name = "datos_censo", open = FALSE)
+usethis::use_data_raw(name = "resultados", open = FALSE)
 
 ## Tests ----
 ## Add one line by test you want to create

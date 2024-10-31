@@ -24,12 +24,12 @@ mod_mapa_principal_ui <- function(id){
         column(
           width = 6,
           leafletOutput(outputId = ns("mapa_principal_negocio"),
-                        height = "600px")
+                        height = "900px")
         ),
         column(
           width = 6,
           highchartOutput(outputId = ns("barras_giro"),
-                          height = "600px")
+                          height = "900px")
         )
       )
     )
@@ -123,7 +123,19 @@ mod_mapa_principal_server <- function(id){
         # mutate(pct = n/nrow(datos_censo_reactive())) |>
         # arrange(desc(pct)) |>
         # select(respuesta, n, pct) |>
-        left_join(tipos_cocina, by = c("respuesta"))
+        left_join(datos_censo_reactive() |>
+                    as_tibble() |>
+                    distinct(P5_O1, color),
+                  by = c("respuesta" = "P5_O1"))
+
+      # if(nrow(bd_tipos_cocina) == 1) {
+      #   bd_tipos_cocina <-
+      #     bd_tipos_cocina |>
+      #     mutate(respuesta = stringr::str_sub(string = respuesta,
+      #                                         start = 1,
+      #                                         end = 1))
+      #
+      # }
 
       total <-
         datos_censo_reactive() |>
@@ -141,17 +153,36 @@ mod_mapa_principal_server <- function(id){
       g <-
         highchart() |>
         hc_title(text = glue::glue("Total de establecimientos por ", legend, "{total}"), style = list(fontSize = "30px")) |>
-        hc_xAxis(categories = bd_tipos_cocina$respuesta, labels = list(style = list(fontSize = "18px"))) |>
+        hc_xAxis(
+          categories = bd_tipos_cocina$respuesta,
+          labels = list(style = list(fontSize = "18px",
+                                     width = "500px")),
+          min = 0,
+          max = nrow(bd_tipos_cocina) - 1,
+          minRange = 1,              # Define un rango mínimo en el eje X
+          endOnTick = FALSE,           # Asegura que el eje termine en una línea de tic
+          startOnTick = FALSE          # Asegura que el eje comience en una línea de tic
+        ) |>
         hc_yAxis(labels = list(style = list(fontSize = "18px")), tickInterval = 1) |>
-        hc_add_series(data = bd_tipos_cocina$n, type = "bar", showInLegend = FALSE, colorByPoint = TRUE, colors = bd_tipos_cocina$color) |>
-        hc_plotOptions(series = list(dataLabels = list(enabled = TRUE, format = "{point.y}", style = list(fontSize = "24px")))) |>
-        hc_legend(itemStyle = list(fontSize = "24px")) |>
-        hc_credits(
-          enabled = TRUE,
-          text = "Los establecimientos pueden tener más de un tipo de cocina",
-          href = NULL,
-          style = list(fontSize = "24px",  textAlign = "right")
-        )
+        hc_add_series(data = bd_tipos_cocina$n,
+                      type = "bar",
+                      showInLegend = FALSE,
+                      colorByPoint = nrow(bd_tipos_cocina) > 1,
+                      color = if (nrow(bd_tipos_cocina) == 1) bd_tipos_cocina$color[1] else NULL,
+                      colors = if (nrow(bd_tipos_cocina) > 1) bd_tipos_cocina$color else NULL
+        ) |>
+        hc_plotOptions(series = list(
+          dataLabels = list(enabled = TRUE, format = "{point.y}", style = list(fontSize = "22px")),
+          pointPadding = 0.1,  # Añade espacio dentro de cada barra
+          groupPadding = 0.1) # Añade espacio entre barras
+        ) |>
+        hc_legend(itemStyle = list(fontSize = "24px"))
+      # hc_credits(
+      #   enabled = TRUE,
+      #   text = "Los establecimientos pueden tener más de un tipo de cocina",
+      #   href = NULL,
+      #   style = list(fontSize = "24px",  textAlign = "right")
+      # )
 
       return(g)
 

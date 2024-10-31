@@ -3,6 +3,7 @@
 library(dplyr)
 library(sf)
 library(ggplot2)
+library(leaflet)
 
 # Poligono delimitad
 puntos <- list(coords_punto_a = c(32.507543, -116.980988),
@@ -23,35 +24,35 @@ puntos <- list(coords_punto_a = c(32.507543, -116.980988),
                coords_punto_p = c(32.516479, -116.997721),
                coords_punto_q = c(32.516564, -116.998511),
                coords_punto_r = c(32.516852, -116.999738),
-               coords_punto_s = c(32.516653, -116.999839),
-               coords_punto_t = c(32.515748, -116.999372),
-               coords_punto_u = c(32.514509, -116.998677),
-               coords_punto_v = c(32.514021, -116.998411),
-               coords_punto_w = c(32.513260, -116.997934),
-               coords_punto_x = c(32.513118, -116.997859),
-               coords_punto_y = c(32.512542, -116.997363),
-               coords_punto_z = c(32.512539, -116.997359),
-               coords_punto_aa = c(32.512331, -116.997137),
-               coords_punto_ab = c(32.511895, -116.996544),
-               coords_punto_ac = c(32.511881, -116.996793),
-               coords_punto_ad = c(32.511952, -116.997120),
-               coords_punto_ae = c(32.512084, -116.997483),
-               coords_punto_af = c(32.512168, -116.997782),
-               coords_punto_ag = c(32.512168, -116.997782),
-               coords_punto_ah = c(32.512203, -116.997994),
-               coords_punto_ai = c(32.512200, -116.998082),
-               coords_punto_aj = c(32.512221, -116.998426),
-               coords_punto_ak = c(32.512221, -116.998426),
-               coords_punto_al = c(32.512209, -116.998628),
-               coords_punto_am = c(32.512126, -116.998724),
-               coords_punto_an = c(32.511914, -116.998330),
-               coords_punto_ao = c(32.511800, -116.998159),
-               coords_punto_ap = c(32.511302, -116.997488),
-               coords_punto_aq = c(32.510921, -116.997040),
-               coords_punto_ar = c(32.510076, -116.996841),
-               coords_punto_as = c(32.509675, -116.997603),
-               coords_punto_at = c(32.509573, -116.998283),
-               coords_punto_au = c(32.509481, -116.998913),
+               coords_punto_s = c(32.517211, -117.000761),
+               coords_punto_t = c(32.517537, -117.001909),
+               coords_punto_u = c(32.517714, -117.004444),
+               coords_punto_v = c(32.517389, -117.005050),
+               coords_punto_w = c(32.516932, -117.005531),
+               coords_punto_x = c(32.516770, -117.005826),
+               coords_punto_y = c(32.516640, -117.006123),
+               coords_punto_z = c(32.516558, -117.006542),
+               coords_punto_aa = c(32.516568, -117.007068),
+               coords_punto_ab = c(32.512856, -117.009141),
+               coords_punto_ac = c(32.512140, -117.006070),
+               coords_punto_ad = c(32.511618, -117.003009),
+               coords_punto_ae = c(32.512131, -117.002813),
+               coords_punto_af = c(32.511770, -117.000673),
+               coords_punto_ag = c(32.511459, -117.000608),
+               coords_punto_ah = c(32.511333, -116.999322),
+               coords_punto_ai = c(32.511019, -116.999347),
+               coords_punto_aj = c(32.510779, -116.998577),
+               coords_punto_ak = c(32.510872, -116.998549),
+               coords_punto_al = c(32.510787, -116.998297),
+               coords_punto_am = c(32.511040, -116.998160),
+               coords_punto_an = c(32.510735, -116.997209),
+               coords_punto_ao = c(32.510422, -116.997008),
+               coords_punto_ap = c(32.510065, -116.996845),
+               coords_punto_aq = c(32.509861, -116.997269),
+               coords_punto_ar = c(32.509762, -116.997605),
+               coords_punto_as = c(32.509671, -116.997598),
+               coords_punto_at = c(32.509604, -116.998292),
+               coords_punto_au = c(32.509482, -116.998914),
                coords_punto_av = c(32.509864, -117.000595),
                coords_punto_aw = c(32.509078, -117.001558),
                coords_punto_ax = c(32.508320, -117.001725),
@@ -67,27 +68,16 @@ puntos <- list(coords_punto_a = c(32.507543, -116.980988),
                coords_punto_bh = c(32.503094, -117.005523),
                coords_punto_bi = c(32.503250, -117.002988),
                coords_punto_bj = c(32.501327, -117.003148),
-               coords_punto_bk = c(32.500023, -117.001076),
-               coords_punto_bl = c(32.499856, -117.000546),
-               coords_punto_bm = c(32.498884, -116.998935),
-               coords_punto_bn = c(32.498452, -116.997900),
-               coords_punto_bo = c(32.498105, -116.996859),
-               coords_punto_bp = c(32.498064, -116.996156),
-               coords_punto_bq = c(32.498103, -116.995473),
-               coords_punto_br = c(32.498186, -116.994157),
-               coords_punto_bs = c(32.498243, -116.993808),
-               coords_punto_bt = c(32.500220, -116.989952),
-               coords_punto_bu = c(32.500784, -116.989456),
-               coords_punto_bv = c(32.500431, -116.988892),
-               coords_punto_bw = c(32.500216, -116.986391),
-               coords_punto_bx = c(32.500074, -116.985678),
-               coords_punto_by = c(32.498678, -116.985881),
-               coords_punto_bz = c(32.498754, -116.985307),
-               coords_punto_ca = c(32.499037, -116.984860),
-               coords_punto_cb = c(32.499508, -116.985129),
-               coords_punto_cc = c(32.499843, -116.984559),
-               coords_punto_cd = c(32.500030, -116.984667),
-               coords_punto_ce = c(32.506338, -116.979526)
+               coords_punto_bk = c(32.500099, -117.003040),
+               coords_punto_bl = c(32.496644, -116.995695),
+               coords_punto_bm = c(32.497589, -116.981560),
+               coords_punto_bn = c(32.498563, -116.980793),
+               coords_punto_bo = c(32.499064, -116.981654),
+               coords_punto_bp = c(32.498744, -116.982103),
+               coords_punto_bq = c(32.500119, -116.983204),
+               coords_punto_br = c(32.501186, -116.982595),
+               coords_punto_bs = c(32.502872, -116.981179),
+               coords_punto_bt = c(32.506029, -116.978440)
                )
 
 
@@ -134,6 +124,27 @@ shp_galeriasHipodromo |>
               fillOpacity = 0.2) |>
   addMarkers(data = shp_puntos,
              label = ~ punto) |>
-  addPolygons(data = shp_poligono)
+  addPolygons(data = shp_poligono) |>
+  addCircleMarkers(data = datos_censo,
+                   opacity = 1,
+                   radius = 10,
+                   fillOpacity = 1,
+                   stroke = F,
+                   # fillColor = ~pal_tipo_negocios(P5_O1),
+                   # fillColor = ~color,
+                   # color = ~pal_tipo_negocios(P5_O1),
+                   # color = ~color,
+                   # clusterOptions = markerClusterOptions(),
+                   popup = ~ glue::glue("<span style='font-size:20px;'>Nombre: {P2} <br>
+                                              Tipo de cocina: {tipos_cocina} <br>
+                                              Horario de apertura: {P6} <br>
+                                              Horario de cierre: {P7} <br>
+                                              Música en vivo: {P8} <br>
+                                              Menús de temporada: {P9} <br>
+                                              Promociones especiales: {P10} <br>
+                                              Pedidos en línea o en app: {P11} <br>
+                                              Áreas al aire libre o terrazas: {P12} <br>
+                                              Área de juego para niños: {P13}</span>"),
+                   group = "Negocios")
 
 usethis::use_data(shp_poligono, overwrite = TRUE)
