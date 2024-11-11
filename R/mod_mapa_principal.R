@@ -6,34 +6,71 @@
 #'
 #' @noRd
 #'
-#' @import ggplot2 sf leaflet highcharter
+#' @import ggplot2 sf leaflet highcharter bslib
 #' @importFrom shiny NS tagList
 mod_mapa_principal_ui <- function(id){
   ns <- NS(id)
-  tagList(
-    fluidPage(
-      tags$style(HTML("
-    .selectize-input { font-size: 20px; }
-    .selectize-dropdown .option { font-size: 20px; }
-                      ")),
-      h1("Plaza Galerías Hipódromo"),
-      fluidRow(
-        selectInput(inputId = ns("tipo_cocina"),
-                    label = h2("Tipo de cocina"),
-                    choices = c("Todos", sort(unique(datos_censo$P5_O1))), width = "40%"),
-        column(
-          width = 6,
-          leafletOutput(outputId = ns("mapa_principal_negocio"),
-                        height = "900px")
+  # tagList(
+  bslib::nav_panel(
+    title = "Plaza Galerías Hipódromo",
+    bslib::card(
+      full_screen = T,
+      card_header("Mapa principal"),
+      layout_sidebar(
+        sidebar = sidebar(
+          title = "Menú",
+          open = TRUE,
+          id = "control_mapa",
+          width = "300px",
+          selectInput(inputId = ns("tipo_cocina"),
+                      label = h2("Tipo de cocina"),
+                      choices = c("Todos",
+                                  sort(unique(datos_censo$P5_O1))),
+                      width = "400%")
         ),
-        column(
-          width = 6,
-          highchartOutput(outputId = ns("barras_giro"),
-                          height = "900px")
+        bslib::accordion(
+          open = c("Mapa principal", "Negocios"),
+          bslib::accordion_panel(
+            title = "Mapa principal",
+            value = "Mapa principal",
+            bslib::card_body(
+              shinycssloaders::withSpinner(leafletOutput(outputId = ns("mapa_principal_negocio"),
+                                                         height = "800px")))
+          ),
+          bslib::accordion_panel(
+            title = "Negocios",
+            value = "Negocios",
+            bslib::card_body(
+              shinycssloaders::withSpinner(highchartOutput(outputId = ns("barras_giro"),
+                                                           height = "800px")))
+          )
         )
       )
     )
   )
+  # fluidPage(
+  #   tags$style(HTML("
+  # .selectize-input { font-size: 16px; }
+  # .selectize-dropdown .option { font-size: 16px; }
+  #                   ")),
+  #   h1("Plaza Galerías Hipódromo"),
+  #   fluidRow(
+  # selectInput(inputId = ns("tipo_cocina"),
+  #             label = h2("Tipo de cocina"),
+  #             choices = c("Todos", sort(unique(datos_censo$P5_O1))), width = "40%"),
+  #     column(
+  #       width = 6,
+  # leafletOutput(outputId = ns("mapa_principal_negocio"),
+  #               height = "1000px")
+  #     ),
+  #     column(
+  #       width = 6,
+  #      highchartOutput(outputId = ns("barras_giro"),
+  #                      height = "1000px")
+  #     )
+  #   )
+  # )
+  # )
 }
 
 #' mapa_principal Server Functions
@@ -77,6 +114,7 @@ mod_mapa_principal_server <- function(id){
                     stroke = TRUE,
                     weight = 5,
                     fillOpacity = 0.1,
+                    color = "#000000",
                     group = "Área de interés") |>
         addCircleMarkers(data = datos_censo_reactive(),
                          opacity = 1,
@@ -88,7 +126,7 @@ mod_mapa_principal_server <- function(id){
                          # color = ~pal_tipo_negocios(P5_O1),
                          color = ~color,
                          # clusterOptions = markerClusterOptions(),
-                         popup = ~ glue::glue("<span style='font-size:20px;'>Nombre: {P2} <br>
+                         popup = ~ glue::glue("<span style='font-size:16px;'>Nombre: {P2} <br>
                                               Tipo de cocina: {tipos_cocina} <br>
                                               Horario de apertura: {P6} <br>
                                               Horario de cierre: {P7} <br>

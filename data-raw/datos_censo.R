@@ -4,7 +4,7 @@ library(dplyr)
 library(sf)
 
 bd_censo_raw <-
-  readxl::read_xlsx(path = "./data-raw/38 CENSO_KATH.xlsx", na = "-1") |>
+  readxl::read_xlsx(path = "./data-raw/38 CENSO_KATH_4.xlsx", na = "-1") |>
   filter(!SbjNum %in% c(210983135, 210983136)) |>
   mutate(P5_O1 = P5_correguida) |>
   filter(!is.na(P5_O1))
@@ -34,10 +34,17 @@ datos_censo <-
                crs = 4326)
 
 bd_colores_raw <-
-  readxl::read_xlsx(path = "./data-raw/colores_censo.xlsx") |>
+  readxl::read_xlsx(path = "./data-raw/colores_censo_2.xlsx") |>
   mutate(colores = paste0("#", colores)) |>
-  bind_rows(tibble(colores = c("red", "blue", "yellow", "black"))) |>
+  bind_rows(tibble(colores = c("red", "blue", "brown", "purple"))) |>
   rename(color = colores)
+
+set.seed(312)
+bd_colores_raw <-
+  bd_colores_raw |>
+  mutate(color_2 = sample(x = bd_colores_raw$color, size = nrow(bd_colores_raw), replace = TRUE)) |>
+  select(!color) |>
+  rename(color = color_2)
 
 bd_colores <-
   bd_censo_raw |>
