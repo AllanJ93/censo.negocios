@@ -315,6 +315,6 @@ bd_etapa_2_raw |>
   glimpse()
 
 bd_etapa_2_raw |>
-  calcular_proporciones(variable = "asian_street_food_fusion_q_20") |>
+  calcular_proporciones(variable = "rango_edad") |>
   # left_join(colores_tipoCocina, by = c("respuesta" = "tipos_cocina"))
   graficar_barras()
